@@ -121,7 +121,27 @@ When a memory page transitions from general-purpose kernel/DMA usage to an isola
 
 ---
 
-## 6. Conclusion
+## 6. Related Research & Cross-Verification
+
+The findings in this repository focus on the **T8110 (A15 / iPhone14,6)** implementation and are independently confirmed and complemented by:
+
+* **[IvanIVGrozny/iOS27.0.1-SPTM-Research](https://github.com/IvanIVGrozny/iOS27.0.1-SPTM-Research)** — *Anatomy of an SPTM TLB-Invalidation Race Fix*
+  * Analyzed the **T8150 (A18/A19 / iPhone18,4)** firmware across the same build window (27.2b1 `24B5084k` → 27.2b3 `24B5099f`).
+  * Identified the peer racing actor as the **Apple GPU GMMU (Graphics Memory Management Unit)** via `/arm-io/sgx` and AGX driver strings.
+  * Cataloged the extreme barrier surge (**+24 `dmb ish` barriers**) and the **8.33 ms (200,000 tick) spinlock timeout budget** (`S3_3_C14_C0_6`).
+  * Cross-verifies that this patch was deployed fleet-wide across all modern Apple Silicon SoC generations.
+
+---
+
+## 7. Credits & Acknowledgments
+
+- **IvanIVGrozny** ([iOS27.0.1-SPTM-Research](https://github.com/IvanIVGrozny/iOS27.0.1-SPTM-Research)) for the in-depth T8150 analysis, barrier census, and identification of the GPU GMMU peer actor.
+- **Lakr233** for foundational insights into iOS translation invalidation paths.
+- **opa334** and the broader iOS security research community for tracking and noting SPTM bypass mitigations across beta builds.
+
+---
+
+## 8. Conclusion
 
 Static analysis of the firmware changes establishes conclusive proof that:
 1. **A race condition existed in iOS 27.0.1** within `t8110dart_verify_bypass`, allowing physical frames undergoing retyping to remain accessible to active IOMMU channels.
